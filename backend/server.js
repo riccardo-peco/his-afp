@@ -21,7 +21,6 @@ import {
 	checkUsernameAvailabilityFn,
 	createUserFn,
 	deactivateUserFn,
-	editUserRoleFn,
 	retrieveAllStaffFn
 } from "./services/staff.js";
 
@@ -79,7 +78,6 @@ app.get('/users/check/:username', authenticateTokenFn, checkUsernameAvailability
 app.post('/users', authenticateTokenFn, createUserFn);
 app.patch('/users/:id/deactivate', authenticateTokenFn, deactivateUserFn);
 app.patch('/users/:id/activate', authenticateTokenFn, activateUserFn);
-app.patch('/users/:id/editrole', authenticateTokenFn, editUserRoleFn);
 
 // --- ROTTA NON TROVATA ---
 app.all(/(.*)/, (req, res, next) => {
