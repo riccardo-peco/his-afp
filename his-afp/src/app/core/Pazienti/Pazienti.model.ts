@@ -4,6 +4,7 @@ export interface Paziente {
   cognome: string; // cognome
   braccialetto: string; // braccialetto
   eta: number; // da calcolare con dataNascita
+  stato: string; // stato 
   codiceColore: string; // coloreCode
   note: string; // noteTriage
   patologia: string; // patologiaCode
@@ -32,6 +33,15 @@ export interface PazienteDTO {
   indirizzoCivico: string;
   comune: string;
   provincia: string;
+}
+
+export interface PazienteDimesso {
+  braccialetto: string;
+  nome: string;
+  cognome: string;
+  dataOraIngresso: Date;
+  dataOraDimissione: Date;
+  stato: string;
 }
 
 export interface PatientAdmission {

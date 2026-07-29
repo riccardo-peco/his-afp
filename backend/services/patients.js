@@ -229,7 +229,8 @@ export const retrieveDischargedAdmissionsFn = catchAsync(async (req, res) => {
                p.nome,
                p.cognome,
                a.data_ora_ingresso   AS "dataOraIngresso",
-               a.data_ora_dimissione AS "dataOraDimissione"
+               a.data_ora_dimissione AS "dataOraDimissione",
+			   a.stato
         FROM admissions a
                  JOIN patients p ON a.patient_id = p.id
         WHERE a.stato = 'DIM'

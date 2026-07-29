@@ -1,20 +1,37 @@
 <div class="mb-4 p-4">
   <p-card
     class="w-2xs {{setBorder()}} {{setColoreDiStato()}}"
-    header="{{paziente().cognome}} {{paziente().nome}}"
     subheader="{{paziente().braccialetto}} - {{paziente().codiceColore}}"
   >
+    <ng-template #header>
+      <div class="flex justify-between items-center p-3">
+        <span class="font-bold" style="font-size: 1.17rem">
+          {{ paziente().cognome }} {{ paziente().nome }}
+        </span>
+        <p-tag [value]="paziente().stato" [severity]="getSeverity(paziente().stato)" rounded />
+      </div>
+    </ng-template>
+
     <p>
       <b>{{ paziente().patologia }}</b>
       <br>
       Note Triage: {{ paziente().note }}
     </p>
+    
+      <ng-template #footer>
+        <div class="flex flex-column gap-4">
+          <p-button
+            (onClick)="navigateToSchedaPaziente()"
+            label="Modifica"
+            severity="contrast"
+          />
+          <p-button
+            (onClick)="changeStatusPaziente()"
+            label="Stato"
+            severity="contrast"
+          />
+        </div>
+      </ng-template>
 
-    <ng-template #footer>
-      <p-button
-        (onClick)="navigateToSchedaPaziente()"
-        label="Modifica"
-      />
-    </ng-template>
   </p-card>
 </div>

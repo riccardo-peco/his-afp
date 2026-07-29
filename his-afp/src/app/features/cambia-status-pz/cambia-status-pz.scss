@@ -1,0 +1,24 @@
+.dialog-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.dialog-body {
+    flex: 1;
+}
+
+.dialog-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: .75rem;
+}
+
+.dialog-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--surface-border);
+}

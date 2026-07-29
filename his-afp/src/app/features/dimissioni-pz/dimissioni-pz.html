@@ -1,0 +1,64 @@
+<h2 class="text-3xl font-bold mb-4">
+    Dimissioni ultime 24 ore
+</h2>
+
+<p class="mb-3 text-color-secondary">
+    Pazienti dimessi: <b>{{ patientManager.listaDimissioni().length }}</b>
+</p>
+
+<p-table
+    [value]="patientManager.listaDimissioni()"
+    class="p-datatable-striped p-datatable-gridlines"
+    [tableStyle]="{ 'min-width': '70rem' }"
+>
+    <ng-template pTemplate="header">
+        <tr>
+            <th class="text-center">Braccialetto</th>
+            <th>Nome</th>
+            <th>Cognome</th>
+            <th class="text-center">Data/Ora Arrivo</th>
+            <th pSortableColumn="dataOraDimissione" class="text-center">
+                Data/Ora Dimissione
+                <p-sortIcon field="dataOraDimissione"/>
+            </th>
+            <th>Stato</th>
+        </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-p>
+        <tr>
+            <td class="text-center font-semibold">
+                {{ p.braccialetto }}
+            </td>
+
+            <td>
+                {{ p.nome }}
+            </td>
+
+            <td>
+                {{ p.cognome }}
+            </td>
+
+            <td class="text-center">
+                {{ p.dataOraIngresso | date:'dd/MM/yyyy HH:mm' }}
+            </td>
+
+            <td class="text-center">
+                {{ p.dataOraDimissione | date:'dd/MM/yyyy HH:mm' }}
+            </td>
+
+            <td class="flex justify-center">
+                <p-tag [value]="p.stato" severity="info" rounded/>
+            </td>
+        </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="5" class="text-center py-5">
+                Nessuna dimissione registrata nelle ultime 24 ore.
+            </td>
+        </tr>
+    </ng-template>
+
+</p-table>

@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { User, UserRole } from './Personale.model';
 import { catchError, map, Observable, of } from 'rxjs';
 import { APIResponse } from '../models/APIResponse.model';
-import { isActive } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',

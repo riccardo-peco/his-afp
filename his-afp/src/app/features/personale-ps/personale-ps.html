@@ -1,130 +1,93 @@
-<div style="display: flex !important; flex-direction: column !important; gap: 2rem !important; width: 100% !important;" class="p-4">
+<div class="p-4">
   
-  <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important;" class="pb-3 border-bottom-1 surface-border">
-    <h2 style="margin: 0 !important;" class="font-bold text-2xl">Gestione Personale Sanitario</h2>
-    <p-button 
-      label="Aggiungi Operatore" 
-      icon="pi pi-plus" 
-      (onClick)="apriPerNuovo()">
-    </p-button>
+  <div class="pb-3 border-bottom-1 surface-border w-full flex align-items-center">
+    <h2 class="font-bold text-2xl m-0">Gestione Personale Sanitario</h2>
+    <div class="ml-auto">
+      <p-button 
+        label="Aggiungi Operatore" 
+        icon="pi pi-plus"
+        (onClick)="apriPerNuovo()">
+      </p-button>
+    </div>
   </div>
 
-  <div style="display: flex !important; flex-direction: row !important; gap: 1.5rem !important; width: 100% !important; align-items: flex-start !important;">
+  <p-divider/>
 
-    <div style="flex: 1 1 0% !important; min-width: 0 !important;">
-      <h3 class="text-xl font-semibold text-green-700 mb-3 flex align-items-center gap-2">
-        <i class="pi pi-check-circle"></i> Personale Sanitario Attivo
+  <div class="flex flex-column md:flex-row gap-3">
+    <!-- SINISTRA -->
+    <div class="flex-1">
+      <h3 class="text-xl font-semibold text-green-700 flex align-items-center gap-2 mb-3 m-0">
+        <i class="pi pi-check-circle"></i>
+        Personale Attivo
       </h3>
-      <div class="card shadow-1 border-round surface-card overflow-hidden border-1 surface-border">
-        <table class="w-full border-collapse border-none text-left">
-          <thead>
-            <tr class="bg-gray-100 surface-100 text-800 font-semibold">
-              <th class="p-3 border-b">ID</th>
-              <th class="p-3 border-b">Username</th>
-              <th class="p-3 border-b">Ruolo</th>
-              <th class="p-3 border-b text-center">Stato</th>
-              <th class="p-3 border-b text-center">Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (utente of operatoriAttivi(); track utente.id) {
-              <tr class="hover:surface-50 border-b-1 surface-border">
-                <td class="p-3">{{ utente.id }}</td>
-                <td class="p-3 font-medium">{{ utente.username }}</td>
-                <td class="p-3">
-                  @if (utente.role === 'DOC') { Medico }
-                  @else if (utente.role === 'INF') { Infermiere }
-                  @else if (utente.role === 'AMM') { Amministrativo }
-                </td>
-                <td class="p-3 text-center">
-                  <span class="inline-flex px-2 py-1 border-round bg-green-50 text-green-700 font-bold text-xs border-1 border-green-200">Attivo</span>
-                </td>
-                <td class="p-3" style="display: flex !important; justify-content: center !important; align-items: center !important; gap: 0.5rem !important;">
-                  <p-button 
-                    icon="pi pi-pencil" 
-                    [rounded]="true" 
-                    [text]="true" 
-                    severity="secondary"
-                    (onClick)="apriPerModifica(utente)">
-                  </p-button>
-                  <p-button 
-                    icon="pi pi-ban" 
-                    [rounded]="true" 
-                    [text]="true" 
-                    severity="warn"
-                    (onClick)="disattivaOperatore(utente.id)">
-                  </p-button>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="5" class="p-5 text-center text-gray-500 italic">
-                  Nessun operatore sanitario attivo nel sistema.
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <p-table [value]="operatoriAttivi()" scroll class="p-datatable-striped p-datatable-gridlines">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Ruolo</th>
+            <th class="text-center">Stato</th>
+            <th class="text-center">Azioni</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-utente>
+          <tr>
+            <td>{{ utente.id }}</td>
+            <td>{{ utente.username }}</td>
+            <td>{{ getRuoloLabel(utente.role) }}</td>
+            <td class="text-center">
+              <span class="status-active">Attivo</span>
+            </td>
+            <td>
+              <div class="flex justify-content-center gap-2">
+                <p-button icon="pi pi-pencil" text rounded severity="secondary"
+                  (onClick)="apriPerModifica(utente)" />
+                <p-button icon="pi pi-ban" text rounded severity="warn"
+                  (onClick)="disattivaOperatore(utente.id)" />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
-
-    <div style="flex: 1 1 0% !important; min-width: 0 !important;">
-      <h3 class="text-xl font-semibold text-red-700 mb-3 flex align-items-center gap-2">
-        <i class="pi pi-trash"></i> Cestino / Personale Disattivato
+    <!-- DIVIDER -->
+    <p-divider layout="vertical" class="hidden md:flex"></p-divider>
+    <!-- DESTRA -->
+    <div class="flex-1">
+      <h3 class="text-xl font-semibold text-red-700 flex align-items-center gap-2 mb-3 m-0">
+        <i class="pi pi-trash"></i>
+        Personale Disattivato
       </h3>
-      <div class="card shadow-1 border-round surface-card overflow-hidden border-1 surface-border">
-        <table class="w-full border-collapse border-none text-left">
-          <thead>
-            <tr class="bg-gray-100 surface-100 text-800 font-semibold">
-              <th class="p-3 border-b">ID</th>
-              <th class="p-3 border-b">Username</th>
-              <th class="p-3 border-b">Ruolo</th>
-              <th class="p-3 border-b text-center">Stato</th>
-              <th class="p-3 border-b text-center">Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (utente of operatoriInattivi(); track utente.id) {
-              <tr class="hover:surface-50 border-b-1 surface-border bg-gray-50">
-                <td class="p-3 text-500">{{ utente.id }}</td>
-                <td class="p-3 text-500 italic line-through">{{ utente.username }}</td>
-                <td class="p-3 text-500">
-                  @if (utente.role === 'DOC') { Medico }
-                  @else if (utente.role === 'INF') { Infermiere }
-                  @else if (utente.role === 'AMM') { Amministrativo }
-                </td>
-                <td class="p-3 text-center">
-                  <span class="inline-flex px-2 py-1 border-round bg-red-50 text-red-700 font-bold text-xs border-1 border-red-200">Disattivato</span>
-                </td>
-                <td class="p-3" style="display: flex !important; justify-content: center !important; align-items: center !important; gap: 0.5rem !important;">
-                  <p-button 
-                    icon="pi pi-refresh" 
-                    [rounded]="true" 
-                    [text]="true" 
-                    severity="success"
-                    (onClick)="attivaOperatore(utente.id)">
-                  </p-button>
-                  <p-button 
-                    icon="pi pi-trash" 
-                    [rounded]="true" 
-                    [text]="true" 
-                    severity="danger"
-                    (onClick)="eliminaOperatore(utente.id)">
-                  </p-button>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="5" class="p-4 text-center text-gray-400 italic">
-                  Il cestino è vuoto.
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <p-table [value]="operatoriInattivi()" scroll class="p-datatable-sm p-datatable-striped">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Ruolo</th>
+            <th class="text-center">Stato</th>
+            <th class="text-center">Azioni</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-utente>
+          <tr class="opacity-70">
+            <td class="text-500">{{ utente.id }}</td>
+            <td class="text-500">{{ utente.username }}</td>
+            <td class="text-500">{{ getRuoloLabel(utente.role) }}</td>
+            <td class="text-center">
+              <span class="status-inactive">Disattivato</span>
+            </td>
+            <td>
+              <div class="flex justify-content-center gap-2">
+                <p-button icon="pi pi-refresh" text rounded severity="success"
+                  (onClick)="attivaOperatore(utente.id)" />
+                <p-button icon="pi pi-trash" text rounded severity="danger"
+                  (onClick)="eliminaOperatore(utente.id)" />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
-
   </div>
 </div>
 

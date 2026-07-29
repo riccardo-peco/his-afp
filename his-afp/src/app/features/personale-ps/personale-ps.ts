@@ -8,6 +8,8 @@ import { SelectModule } from 'primeng/select';
 import { PersonaleManager } from '../../core/Personale/personale-manager';
 import { catchError, first, map, of, switchMap, timer } from 'rxjs';
 import { User } from '../../core/Personale/Personale.model';
+import { DividerModule } from 'primeng/divider';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'his-personale-ps',
@@ -20,6 +22,8 @@ import { User } from '../../core/Personale/Personale.model';
     MessageModule,
     ReactiveFormsModule,
     SelectModule,
+    DividerModule,
+    TableModule
   ],
   templateUrl: './personale-ps.html',
   styleUrl: './personale-ps.scss',
@@ -142,4 +146,17 @@ export class PersonalePs implements OnInit {
     password: ['', [Validators.required]],
     role: ['', [Validators.required]]
   });
+
+  getRuoloLabel(role: string): string {
+    switch(role) {
+      case 'DOC':
+        return 'Medico';
+      case 'INF':
+        return 'Infermiere';
+      case 'AMM':
+        return 'Amministrativo';
+      default:
+        return 'Sconosciuto';
+    }
+  }
 }

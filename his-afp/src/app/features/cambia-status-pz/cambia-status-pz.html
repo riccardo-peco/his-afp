@@ -1,0 +1,39 @@
+<div class="dialog-container">
+
+    <div class="dialog-body">
+
+        <label for="status" class="dialog-label">
+            Nuovo stato
+        </label>
+
+        <p-select
+            inputId="status"
+            [options]="status"
+            [(ngModel)]="selectedStatus"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleziona uno stato"
+            class="w-full">
+        </p-select>
+
+    </div>
+
+    <div class="dialog-footer">
+
+        <p-button
+            label="Annulla"
+            severity="secondary"
+            (onClick)="ref.close()">
+        </p-button>
+
+        <p-button
+            label="Salva"
+            icon="pi pi-check"
+            severity="success"
+            [disabled]="!selectedStatus"
+            (onClick)="cambiaStatus()">
+        </p-button>
+
+    </div>
+
+</div>

@@ -1,9 +1,9 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { PatientAdmission, PatientAdmissionRes, Paziente, PazienteDTO } from './Pazienti.model';
+import { PatientAdmission, PatientAdmissionRes, Paziente, PazienteDimesso, PazienteDTO } from './Pazienti.model';
 import { HttpClient } from '@angular/common/http';
 import { APIResponse } from '../models/APIResponse.model';
-import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +15,8 @@ export class PatientManager {
   #listaPZ = signal<Paziente[]>([]);
   #listaPZFiltered = signal<Paziente[]>(this.#listaPZ());
   listaPZ = this.#listaPZFiltered.asReadonly();
+  #listaDimissioni = signal<PazienteDimesso[]>([]);
+  readonly listaDimissioni = this.#listaDimissioni.asReadonly();
   
   risultatiRicerca = signal<PazienteDTO[]>([]);
   pazienteSelezionato = signal<Partial<PazienteDTO> | null>(null);
@@ -89,6 +91,7 @@ export class PatientManager {
       note: pz.noteTriage,
       patologia: pz.patologiaCode,
       eta: this.calcolaEta(pz.dataNascita),
+      stato: pz.stato,
     };
   }
 
@@ -186,5 +189,24 @@ export class PatientManager {
 
     this.apriForm.set(true);
     this.#router.navigate(['/accettazione-pz'])
+  }
+
+  public changePatientStatus(id: number, stato: string) {
+    return this.#http
+      .patch<APIResponse<PazienteDTO>>(`/api/admissions/${id}/status`, {
+        nuovoStato: stato});
+  }
+
+  public fetchDimissioni() {
+    this.#http
+      .get<APIResponse<PazienteDimesso[]>>(`/api/admissions/reports/discharged`)
+      .subscribe({
+        next: (res) => {
+          this.#listaDimissioni.set(res.data);
+        },
+        error: (err) => {
+          console.error("Errore nella raccolta delle dimissioni: ", err)
+        }
+      });
   }
 }

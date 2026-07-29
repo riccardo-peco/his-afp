@@ -20,10 +20,19 @@ export const routes: Routes = [
     path: 'modifica-pz/:patientId',
     loadComponent: () => import('./features/modifica-pz/modifica-pz').then((m) => m.ModificaPz),
   },
+  {
+    path: 'cambia-status-pz/:patientId',
+    loadComponent: () => import('./features/cambia-status-pz/cambia-status-pz').then((m) => m.CambiaStatusPz),
+  
+  },
   // Percorso per personale ospedaliero
   {
     path: 'personale-ps',
     loadComponent: () => import('./features/personale-ps/personale-ps').then((m) => m.PersonalePs),
+  },
+  {
+    path: 'dimissioni-pz',
+    loadComponent: () => import('./features/dimissioni-pz/dimissioni-pz').then((m) => m.DimissioniPz),
   },
   {
     path: 'stato-servizi',
