@@ -19,6 +19,11 @@ export const routes: Routes = [
     path: 'modifica-pz/:patientId',
     loadComponent: () => import('./features/modifica-pz/modifica-pz').then((m) => m.ModificaPz),
   },
+  // Percorso per personale ospedaliero
+  {
+    path: 'personale-ps',
+    loadComponent: () => import('./features/personale-ps/personale-ps').then((m) => m.PersonalePs),
+  },
   {
     path: 'stato-servizi',
     loadComponent: () =>
@@ -34,4 +39,5 @@ export const routes: Routes = [
     redirectTo: 'stato-servizi',
     pathMatch: 'full',
   },
+
 ];

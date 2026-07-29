@@ -22,9 +22,9 @@ export const checkUsernameAvailabilityFn = catchAsync(async (req, res) => {
 export const createUserFn = catchAsync(async (req, res, next) => {
 	const {username, password, role} = req.body;
 	const hashedPassword = await bcrypt.hash(password, 12);
-	const query = `INSERT INTO users (username, password, role)
-                   VALUES ($1, $2, $3)
-                   RETURNING id, username, role`;
+	const query = `INSERT INTO users (username, password, role, is_active)
+                   VALUES ($1, $2, $3, true)
+                   RETURNING id, username, role, is_active AS "isActive"`;
 	const result = await pool.query(query, [username, hashedPassword, role]);
 	res.status(201).json({status: 'success', data: result.rows[0]});
 });
@@ -47,4 +47,28 @@ export const activateUserFn = catchAsync(async (req, res, next) => {
                                      RETURNING id`, [id]);
 	if (result.rowCount === 0) return next(new AppError('Operatore non trovato', 404));
 	res.status(200).json({status: 'success', message: 'Operatore attivato correttamente'});
+});
+
+export const editUserRoleFn = catchAsync(async (req, res, next) => {
+	const {id} = req.params;
+	const {role} = req.body;
+	const result = await pool.query(`UPDATE users
+                                     SET role = $1
+                                     WHERE id = $2
+                                     RETURNING id, username, role`, [role, id]);
+	if (result.rowCount === 0) return next(new AppError('Operatore non trovato', 404));
+	res.status(200).json({status: 'success', data: result.rows[0]});
+});
+
+export const deleteUserFn = catchAsync(async (req, res, next) => {
+	try {	
+		const {id} = req.params;
+		const result = await pool.query(`DELETE FROM users
+										WHERE id = $1`, [id]);
+		
+		return res.status(200).json({
+			status: "success",
+			message: "Operatore cancellato con successo dal database."
+		});
+	} catch(error) { next(error); }
 });
