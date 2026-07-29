@@ -287,8 +287,15 @@ export const updatePatientInformationFn = catchAsync(async (req, res, next) => {
 
 // GET /patients/search - Ricerca avanzata (Fuzzy)
 export const searchPatientsFn = catchAsync(async (req, res) => {
+	console.log("=== VERSIONE NUOVA ===");
 	const {cf, nome, cognome, data_nascita} = req.query;
-	let query = `SELECT *
+	let query = `SELECT
+					id,
+					codice_fiscale AS "codiceFiscale",
+					nome,
+					cognome,
+					data_nascita AS "dataNascita",
+					sex
                  FROM patients`;
 	const params = [];
 	logger.info(`Ricerca pazienti con parametri: cf=${cf}, nome=${nome}, cognome=${cognome}, data_nascita=${data_nascita}`);

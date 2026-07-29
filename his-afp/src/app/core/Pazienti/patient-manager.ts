@@ -15,6 +15,12 @@ export class PatientManager {
   #listaPZ = signal<Paziente[]>([]);
   #listaPZFiltered = signal<Paziente[]>(this.#listaPZ());
   listaPZ = this.#listaPZFiltered.asReadonly();
+  
+  risultatiRicerca = signal<PazienteDTO[]>([]);
+  pazienteSelezionato = signal<Partial<PazienteDTO> | null>(null);
+  attivaNuovoPaziente = signal<boolean>(false);
+  giaCercato = signal<boolean>(false);
+  apriForm = signal<boolean>(false);
 
   // constructor() {
   //   this.fetchPazienti();
@@ -48,10 +54,11 @@ export class PatientManager {
 
   public admitPatient(pz: PatientAdmission) {
     this.#http
-      .post<APIResponse<PatientAdmissionRes>>(`${environment.apiUrl}/admissions`, pz)
+      .post<APIResponse<PatientAdmissionRes>>(`api/admissions`, pz)
       .subscribe({
         next: (res) => {
-          this.#router.navigate([`/modifica-pz/${res.data.id}`]);
+          this.#router.navigate([`/lista-pz`]);
+          window.location.reload();
         },
         error: (err) => {
           console.error("Errore durante l'ammissione del paziente:", err);
@@ -59,9 +66,9 @@ export class PatientManager {
       });
   }
 
-  public updatePatientInfo(pzId: number, residenza: Pick<PatientAdmission, 'residenza'>) {
+  public updatePatientInfo(pzId: number, residenza: PatientAdmission['residenza']) {
     this.#http
-      .patch<APIResponse<PatientAdmissionRes>>(`${environment.apiUrl}/patients/${pzId}`, residenza)
+      .patch<APIResponse<PatientAdmissionRes>>(`api/patients/${pzId}`, residenza)
       .subscribe({
         next: (res) => {
           this.#router.navigate([`/lista-pz`]);
@@ -104,5 +111,80 @@ export class PatientManager {
       return fullName.includes(name.toLowerCase());
     });
     this.#listaPZFiltered.set(filtered);
+  }
+
+  public searchPatientByCF(codiceFiscale: string) {
+    const CFpulito = codiceFiscale.trim().toUpperCase();
+
+    this.#http
+      .get<APIResponse<PazienteDTO[]>>(`/api/patients/search`, {
+        params: {cf: CFpulito}
+      })
+      .subscribe({
+        next: (res) => {
+          this.giaCercato.set(true);
+
+          if (res.status === 'success' && res.data) {
+            this.risultatiRicerca.set(res.data);
+          } else {
+            this.risultatiRicerca.set([])
+          }
+        },
+        error: (err) => {
+          this.giaCercato.set(true);
+          console.error("Errore durante la ricerca nel DB tramite CF: ", err);
+          this.risultatiRicerca.set([]);
+        }
+      });
+  }
+
+  public searchPatientByAnag(nome: string, cognome: string, dataNascita:string) {
+    this.#http
+      .get<APIResponse<PazienteDTO[]>>(`/api/patients/search`, {
+        params: {
+          nome: nome.trim(),
+          cognome: cognome.trim(),
+          data_nascita: dataNascita 
+        }
+      })
+      .subscribe({
+        next: (res) => {
+          this.giaCercato.set(true);
+          if (res.status === 'success' && res.data) {
+            this.risultatiRicerca.set(res.data);
+          } else {
+            this.risultatiRicerca.set([]);
+          }
+        },
+        error: (err) => {
+          console.error("Errore durante la ricerca nel DB tramite nome, cognome e dataNascita: ", err);
+          this.giaCercato.set(true);
+          this.risultatiRicerca.set([]);
+        } 
+      });
+  }
+  
+  public selectPatient(paziente: PazienteDTO) {
+    this.attivaNuovoPaziente.set(false);
+    this.pazienteSelezionato.set(paziente);
+    this.apriForm.set(true);
+
+    this.#router.navigate(['/accettazione-pz'])
+  }
+
+  public apriFormPaziente (datiRicerca?: { nome?: string, cognome?: string, cf?: string, dataNascita?: string }) {
+    this.attivaNuovoPaziente.set(true);
+
+    this.pazienteSelezionato.set({
+      id: 0,
+      nome: datiRicerca?.nome || '',
+      cognome: datiRicerca?.cognome || '',
+      codiceFiscale: datiRicerca?.cf || '',
+      dataNascita: datiRicerca?.dataNascita || '',
+      sex: ''
+    });
+
+    this.apriForm.set(true);
+    this.#router.navigate(['/accettazione-pz'])
   }
 }

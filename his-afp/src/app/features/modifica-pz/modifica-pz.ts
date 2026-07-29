@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, OnInit, untracked } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { PatientAdmission, PazienteDTO } from '../../core/Pazienti/Pazienti.model';
 import { APIResponse } from '../../core/models/APIResponse.model';
@@ -31,12 +31,12 @@ import { PatientManager } from '../../core/Pazienti/patient-manager';
   styleUrl: './modifica-pz.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModificaPz {
+export class ModificaPz implements OnInit{
   patientId = input<string>();
   gestioneRisorse = inject(GestioneRisorse);
   patientManager = inject(PatientManager);
   patientReq = httpResource<APIResponse<PazienteDTO>>(
-    () => `http://localhost:3000/admissions/${this.patientId()}`,
+    () => `api/admissions/${this.patientId()}`,
   );
   readonly maxDate = new Date();
   readonly sexOption = [
@@ -70,10 +70,10 @@ export class ModificaPz {
       noteTriage: ['', [Validators.required, Validators.maxLength(500)]],
     }),
     residenza: this.#fb.group({
-      via: ['', [Validators.required]],
-      civico: ['', [Validators.required]],
-      comune: ['', [Validators.required]],
-      provincia: ['', [Validators.required, Validators.maxLength(5)]],
+      via: [''],
+      civico: ['', [Validators.maxLength(5)]],
+      comune: [''],
+      provincia: ['', [Validators.maxLength(5)]],
     }),
   });
 
@@ -116,6 +116,10 @@ export class ModificaPz {
     });
   }
 
+  ngOnInit(): void {
+    
+  }
+
   checkFormControl(control: string) {
     const fc = this.paziente.get(control);
     // nome.invalid && (nome.touched || nome.dirty)
@@ -134,10 +138,18 @@ export class ModificaPz {
 
   onSubmit() {
     if (this.paziente.valid) {
-      console.log(this.paziente.value);
+      const formValues = this.paziente.getRawValue();
+
+      console.log("Invio dati al manager: ", formValues.residenza);
+
       this.patientManager.updatePatientInfo(
         Number(this.patientId()) || -1,
-        this.paziente.value.residenza as Pick<PatientAdmission, 'residenza'>,
+        {
+            via: formValues.residenza.via ?? '',
+            civico: formValues.residenza.civico ?? '',
+            comune: formValues.residenza.comune ?? '',
+            provincia: formValues.residenza.provincia ?? '',
+        }
       );
     } else {
       this.paziente.markAllAsTouched();
